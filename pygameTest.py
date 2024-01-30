@@ -18,6 +18,9 @@ pygame.joystick.Joystick(0).init()
 
 joysticks = {}
 
+latestForwardVal:float = 0
+latestStrafeVal:float = 0
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -38,10 +41,12 @@ while True:
         
         if event.type == pygame.JOYAXISMOTION:
             print(f"Joystick {event.instance_id} axis {event.axis} value {event.value}")
-
+            print(f"latestForwardVal: {latestForwardVal} latestStrafeVal: {latestStrafeVal}")
             match event.axis:
-                case 0:
-                    print(f"event val{event.value}")
-                    sendMessage(struct.pack('f', event.value), 5050)
+                case 1:
+                    latestForwardVal = -event.value
+                    sendMessage(struct.pack('ff', latestForwardVal, latestStrafeVal), 5005)
+                
                 case 2:
-                    sendMessage(struct.pack('f', event.value), 8081)  
+                    latestStrafeVal = event.value
+                    sendMessage(struct.pack('ff', latestForwardVal, latestStrafeVal), 5005)
